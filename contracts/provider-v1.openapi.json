@@ -1,0 +1,272 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Archer Private Provider API",
+    "version": "1.0.0",
+    "description": "Private, read-only machine contract between Archer Protocol Gateway and Archer Agent. This API is not exposed at the public edge."
+  },
+  "servers": [
+    { "url": "http://127.0.0.1:3000/api/provider/v1" }
+  ],
+  "security": [
+    { "providerJwt": [] }
+  ],
+  "paths": {
+    "/meta/contract": {
+      "get": {
+        "operationId": "providerContract",
+        "x-required-scope": "market:read",
+        "responses": { "200": { "$ref": "#/components/responses/ProviderEnvelope" } }
+      }
+    },
+    "/stocks": {
+      "get": {
+        "operationId": "listStocks",
+        "x-required-scope": "market:read",
+        "responses": { "200": { "$ref": "#/components/responses/ProviderEnvelope" } }
+      }
+    },
+    "/stocks/prices": {
+      "get": {
+        "operationId": "listStockPrices",
+        "x-required-scope": "market:read",
+        "responses": { "200": { "$ref": "#/components/responses/ProviderEnvelope" } }
+      }
+    },
+    "/stocks/{symbol}/price": {
+      "get": {
+        "operationId": "getStockPrice",
+        "x-required-scope": "market:read",
+        "parameters": [{ "$ref": "#/components/parameters/Symbol" }],
+        "responses": { "200": { "$ref": "#/components/responses/ProviderEnvelope" } }
+      }
+    },
+    "/stocks/{symbol}/chart": {
+      "get": {
+        "operationId": "getStockChart",
+        "x-required-scope": "market:read",
+        "parameters": [{ "$ref": "#/components/parameters/Symbol" }],
+        "responses": { "200": { "$ref": "#/components/responses/ProviderEnvelope" } }
+      }
+    },
+    "/research/securities": {
+      "get": {
+        "operationId": "searchResearchSecurities",
+        "x-required-scope": "research:read",
+        "parameters": [
+          { "name": "query", "in": "query", "schema": { "type": "string", "maxLength": 120 } },
+          { "name": "coverage", "in": "query", "schema": { "type": "string" } },
+          { "name": "securityTypes", "in": "query", "schema": { "type": "string" } },
+          { "name": "sectors", "in": "query", "schema": { "type": "string" } },
+          { "name": "profitability", "in": "query", "schema": { "enum": ["profitable", "unprofitable", "unknown"] } },
+          { "name": "growth", "in": "query", "schema": { "enum": ["growing", "contracting", "flat", "unknown"] } },
+          { "name": "valuation", "in": "query", "schema": { "enum": ["available", "unavailable"] } },
+          { "name": "liquidity", "in": "query", "schema": { "enum": ["healthy", "thin", "stale", "unavailable"] } },
+          { "name": "freshness", "in": "query", "schema": { "enum": ["fresh", "stale", "unknown"] } },
+          { "name": "cursor", "in": "query", "schema": { "type": "string", "maxLength": 500 } },
+          { "name": "limit", "in": "query", "schema": { "type": "integer", "minimum": 1, "maximum": 100, "default": 50 } }
+        ],
+        "responses": { "200": { "$ref": "#/components/responses/ProviderEnvelope" } }
+      }
+    },
+    "/research/securities/{securityId}/overview": {
+      "get": {
+        "operationId": "getResearchOverview",
+        "x-required-scope": "research:read",
+        "parameters": [{ "$ref": "#/components/parameters/SecurityId" }],
+        "responses": { "200": { "$ref": "#/components/responses/ProviderEnvelope" } }
+      }
+    },
+    "/research/securities/{securityId}/financials": {
+      "get": {
+        "operationId": "getResearchFinancials",
+        "x-required-scope": "research:read",
+        "parameters": [
+          { "$ref": "#/components/parameters/SecurityId" },
+          { "name": "statement", "in": "query", "schema": { "enum": ["income", "balance", "cash_flow", "shares"], "default": "income" } },
+          { "name": "periodicity", "in": "query", "schema": { "enum": ["quarter", "annual"], "default": "quarter" } },
+          { "name": "currency", "in": "query", "schema": { "const": "reported", "default": "reported" } },
+          { "name": "limit", "in": "query", "schema": { "type": "integer", "minimum": 1, "maximum": 20, "default": 12 } }
+        ],
+        "responses": { "200": { "$ref": "#/components/responses/ProviderEnvelope" } }
+      }
+    },
+    "/research/securities/{securityId}/metrics": {
+      "get": {
+        "operationId": "getResearchMetrics",
+        "x-required-scope": "research:read",
+        "parameters": [{ "$ref": "#/components/parameters/SecurityId" }],
+        "responses": { "200": { "$ref": "#/components/responses/ProviderEnvelope" } }
+      }
+    },
+    "/research/securities/{securityId}/filings": {
+      "get": {
+        "operationId": "getResearchFilings",
+        "x-required-scope": "research:read",
+        "parameters": [
+          { "$ref": "#/components/parameters/SecurityId" },
+          { "name": "forms", "in": "query", "schema": { "type": "string" } },
+          { "name": "category", "in": "query", "schema": { "enum": ["fundamentals", "material_event", "proxy", "insider", "fund", "other"] } },
+          { "name": "year", "in": "query", "schema": { "type": "integer", "minimum": 1900, "maximum": 2200 } },
+          { "name": "query", "in": "query", "schema": { "type": "string", "maxLength": 120 } },
+          { "name": "cursor", "in": "query", "schema": { "type": "string", "maxLength": 500 } },
+          { "name": "limit", "in": "query", "schema": { "type": "integer", "minimum": 1, "maximum": 50, "default": 25 } }
+        ],
+        "responses": { "200": { "$ref": "#/components/responses/ProviderEnvelope" } }
+      }
+    },
+    "/research/securities/{securityId}/excerpts": {
+      "get": {
+        "operationId": "getResearchExcerpts",
+        "x-required-scope": "research:read",
+        "parameters": [
+          { "$ref": "#/components/parameters/SecurityId" },
+          { "name": "query", "in": "query", "schema": { "type": "string", "minLength": 2, "maxLength": 200 } },
+          { "name": "chunkId", "in": "query", "schema": { "type": "string", "format": "uuid" } },
+          { "name": "filingId", "in": "query", "schema": { "type": "string", "format": "uuid" } },
+          { "name": "limit", "in": "query", "schema": { "type": "integer", "minimum": 1, "maximum": 12, "default": 8 } }
+        ],
+        "responses": { "200": { "$ref": "#/components/responses/ProviderEnvelope" } }
+      }
+    },
+    "/research/securities/{securityId}/events": {
+      "get": {
+        "operationId": "getResearchEvents",
+        "x-required-scope": "research:read",
+        "parameters": [
+          { "$ref": "#/components/parameters/SecurityId" },
+          { "name": "limit", "in": "query", "schema": { "type": "integer", "minimum": 1, "maximum": 50, "default": 20 } }
+        ],
+        "responses": { "200": { "$ref": "#/components/responses/ProviderEnvelope" } }
+      }
+    },
+    "/research/securities/{securityId}/peers": {
+      "get": {
+        "operationId": "getResearchPeers",
+        "x-required-scope": "research:read",
+        "parameters": [
+          { "$ref": "#/components/parameters/SecurityId" },
+          { "name": "limit", "in": "query", "schema": { "type": "integer", "minimum": 1, "maximum": 25, "default": 10 } }
+        ],
+        "responses": { "200": { "$ref": "#/components/responses/ProviderEnvelope" } }
+      }
+    },
+    "/research/securities/{securityId}/sources": {
+      "get": {
+        "operationId": "getResearchSources",
+        "x-required-scope": "research:read",
+        "parameters": [{ "$ref": "#/components/parameters/SecurityId" }],
+        "responses": { "200": { "$ref": "#/components/responses/ProviderEnvelope" } }
+      }
+    },
+    "/research/compare": {
+      "post": {
+        "operationId": "compareResearchSecurities",
+        "x-required-scope": "research:read",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["securityIds"],
+                "properties": { "securityIds": { "type": "array", "minItems": 2, "maxItems": 4, "items": { "type": "string", "format": "uuid" } } }
+              }
+            }
+          }
+        },
+        "responses": { "200": { "$ref": "#/components/responses/ProviderEnvelope" } }
+      }
+    },
+    "/research/screen": {
+      "post": {
+        "operationId": "screenResearchSecurities",
+        "x-required-scope": "research:read",
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "type": "object" } } } },
+        "responses": { "200": { "$ref": "#/components/responses/ProviderEnvelope" } }
+      }
+    },
+    "/chain/status": {
+      "get": {
+        "operationId": "getChainStatus",
+        "x-required-scope": "chain:read",
+        "responses": { "200": { "$ref": "#/components/responses/ProviderEnvelope" } }
+      }
+    },
+    "/chain/stock-tokens": {
+      "get": {
+        "operationId": "listChainStockTokens",
+        "x-required-scope": "chain:read",
+        "responses": { "200": { "$ref": "#/components/responses/ProviderEnvelope" } }
+      }
+    },
+    "/chain/corporate-actions": {
+      "get": {
+        "operationId": "listChainCorporateActions",
+        "x-required-scope": "chain:read",
+        "parameters": [
+          { "name": "pendingOnly", "in": "query", "schema": { "type": "boolean", "default": false } },
+          { "name": "symbol", "in": "query", "schema": { "type": "string", "pattern": "^[A-Za-z0-9](?:[A-Za-z0-9]|[.-](?=[A-Za-z0-9])){0,15}$", "maxLength": 16 } },
+          { "name": "limit", "in": "query", "schema": { "type": "integer", "minimum": 1, "maximum": 100, "default": 50 } }
+        ],
+        "responses": { "200": { "$ref": "#/components/responses/ProviderEnvelope" } }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "providerJwt": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "EdDSA JWT",
+        "description": "EdDSA only; issuer archer-protocol-gateway, audience archer-provider-v1, subject gateway, unique jti, X-Request-ID-bound requestId claim, and maximum lifetime 60 seconds."
+      }
+    },
+    "parameters": {
+      "Symbol": {
+        "name": "symbol",
+        "in": "path",
+        "required": true,
+        "schema": { "type": "string", "minLength": 1, "maxLength": 16, "pattern": "^[A-Za-z0-9](?:[A-Za-z0-9]|[.-](?=[A-Za-z0-9])){0,15}$" }
+      },
+      "SecurityId": {
+        "name": "securityId",
+        "in": "path",
+        "required": true,
+        "schema": { "type": "string", "format": "uuid" }
+      }
+    },
+    "responses": {
+      "ProviderEnvelope": {
+        "description": "Versioned provider envelope",
+        "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ProviderEnvelope" } } }
+      }
+    },
+    "schemas": {
+      "ProviderEnvelope": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["data", "meta"],
+        "properties": {
+          "data": {},
+          "meta": { "$ref": "#/components/schemas/ProviderMeta" }
+        }
+      },
+      "ProviderMeta": {
+        "type": "object",
+        "required": ["schemaVersion", "generatedAt"],
+        "properties": {
+          "schemaVersion": { "const": 1 },
+          "dataVersion": { "type": "string" },
+          "generatedAt": { "type": "string", "format": "date-time" },
+          "freshestSourceAt": { "type": ["string", "null"], "format": "date-time" },
+          "coverageTier": { "type": "string" },
+          "stale": { "type": "boolean" },
+          "sources": { "type": "array", "items": {} },
+          "warnings": { "type": "array", "items": { "type": "string" } }
+        }
+      }
+    }
+  }
+}

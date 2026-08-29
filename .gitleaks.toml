@@ -1,0 +1,18 @@
+title = "Archer Protocol Gateway secret scanning"
+
+[extend]
+useDefault = true
+
+[[allowlists]]
+description = "Deterministic MPP credential used only by fixture configuration"
+condition = "AND"
+regexTarget = "line"
+paths = ['''(^|/)src/config\.ts$''']
+regexes = ['''MPP_SECRET_KEY:\s*["'][^"']+["']''']
+
+[[allowlists]]
+description = "Deterministic reseller credential used only by protocol tests"
+condition = "AND"
+regexTarget = "line"
+paths = ['''(^|/)test/rest-protocol\.test\.ts$''']
+regexes = ['''const\s+secret\s*=\s*["'][^"']+["']''']
