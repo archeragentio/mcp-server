@@ -1,0 +1,52 @@
+{
+  "name": "@archer/protocol-gateway",
+  "version": "0.1.0",
+  "private": true,
+  "license": "Apache-2.0",
+  "type": "module",
+  "description": "Public paid REST and MCP gateway for Archer market and research data.",
+  "engines": {
+    "node": ">=24 <25"
+  },
+  "packageManager": "pnpm@11.24.0",
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "catalog:check": "tsx scripts/check-catalog.ts",
+    "conformance:smoke": "tsx scripts/smoke-conformance.ts",
+    "dev": "tsx watch src/server.ts",
+    "dev:fixture": "tsx src/fixture.ts",
+    "lint": "eslint src vitest.config.ts",
+    "start": "node dist/server.js",
+    "test": "vitest run",
+    "keys:provider": "tsx scripts/generate-provider-keypair.ts",
+    "reseller:hash": "tsx scripts/hash-reseller-token.ts",
+    "test:conformance": "vitest run test/catalog.test.ts test/rest-protocol.test.ts test/mcp-protocol.test.ts test/provider-client.test.ts test/readiness.test.ts test/rate-limit.test.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@hono/node-server": "2.1.1",
+    "@modelcontextprotocol/client": "2.0.0",
+    "@modelcontextprotocol/node": "2.0.0",
+    "@modelcontextprotocol/server": "2.0.0",
+    "@x402/core": "2.24.0",
+    "@x402/evm": "2.24.0",
+    "@x402/extensions": "2.24.0",
+    "@x402/hono": "2.24.0",
+    "hono": "4.13.5",
+    "ioredis": "6.0.0",
+    "jose": "6.2.10",
+    "mppx": "0.9.1",
+    "pino": "10.3.1",
+    "viem": "2.56.0",
+    "zod": "4.5.2"
+  },
+  "devDependencies": {
+    "@eslint/js": "10.0.1",
+    "@types/node": "24.13.3",
+    "eslint": "10.9.1",
+    "tsx": "4.23.12",
+    "typescript": "6.0.3",
+    "typescript-eslint": "8.68.0",
+    "vitest": "4.1.11"
+  }
+}
